@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(wrong-calculator LANGUAGES CXX VERSION "0.1.0-alpha")
+project(wrong-calculator LANGUAGES CXX)
 
 set(CPACK_GENERATOR "DEB")
 set(CPACK_PACKAGE_VERSION "0.1.0-alpha")
