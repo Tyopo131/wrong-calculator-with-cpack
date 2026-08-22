@@ -1,3 +1,10 @@
+/**
+ * @file
+ * @brief Main file. Contains literally everything.
+ * 
+ * (what else should I write here? any suggestions?) 
+ **/
+
 #include <iostream>
 #include <optional>
 #include <string>
@@ -13,8 +20,7 @@ using namespace std;
  * - If the two strings are different lengths,
  * the difference in length is added.
  */
-int measureCharacterDifference(std::string str1,
-                               std::string str2) {
+int measureCharacterDifference(std::string str1, std::string str2) {
     int difference = 0;
     difference += std::abs(static_cast<long long>(str1.length()
                                                 - str2.length()));
@@ -43,13 +49,14 @@ protected:
     /// @brief Second number of the sum.
     double second;
     /**
-     * @brief Implementation for calculating the actual sum.
-     * @return Result of the sum.
-     *
-     * Actually calculates the sum,
-     * before adding 13 or scoring complexity.
+     * @brief (BUGGED) Implementation for calculating the actual sum
+     * @warning Caching was removed!
      */
     std::optional<double> cachedResult;
+    /**
+     * @brief Calculates the actual sum, no modifications applied.
+     * @return Result of the sum.
+     */
     virtual double calculateRealResult() = 0;
 public:
     /**
@@ -64,6 +71,14 @@ public:
     /**
      * @brief Computes the complexity of the sum.
      * @return Complexity score
+     * 
+     * Takes into consideration:
+     * - Difference in characters between the 2 input numbers
+     * - Difference in characters between the first input and the result
+     *   - **ONLY** takes into consideration the first input, not the second. <em>(bug?)</em>
+     *   
+     * @see measureCharacterDifference
+     *
      */
     virtual double computeComplexity() {
         double score = 1;
@@ -83,6 +98,12 @@ public:
 
         return score * operationComplexityMultiplier();
     }
+    /**
+     * @brief Calculate the final result of the sum.
+     * @return Result of the sum
+     * 
+     * - 13 is added only if the complexity score reaches > 1.3
+     */
     virtual double calculate() {
         double complexity = computeComplexity();
         if (complexity > 1.3) {
@@ -99,7 +120,9 @@ public:
         : first(first),
         second(second) {}
 };
-
+/**
+ * @brief @link Sum @endlink implementation for addition.
+ */
 class AddSum : public Sum {
 public:
     AddSum(double first, double second)
@@ -108,6 +131,9 @@ public:
         return first + second;
     }
 };
+/**
+ * @brief @link Sum @endlink implementation for multiplication.
+ */
 class MultiplySum : public Sum {
 public:
     MultiplySum(double first, double second)
@@ -119,6 +145,9 @@ public:
         return 1.04;
     }
 };
+/**
+ * @brief @link Sum @endlink implementation for division.
+ */
 class DivideSum : public Sum {
 public:
     DivideSum(double first, double second)
@@ -130,6 +159,9 @@ public:
         return 1.014;
     }
 };
+/**
+ * @brief @link Sum @endlink implementation for subtraction.
+ */
 class SubtractSum : public Sum {
 public:
     SubtractSum(double first, double second)
@@ -139,6 +171,7 @@ public:
     };
 };
 
+/// @cond
 int main()
 {
     std::cout << "Hello.  Do you want to do a sum on my FABULOUS"
@@ -197,3 +230,4 @@ int main()
     }
 
 }
+/// @endcond
