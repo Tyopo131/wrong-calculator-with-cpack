@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.20)
 project(wrong-calculator LANGUAGES CXX)
 
 set(CPACK_GENERATOR "DEB")
-set(CPACK_PACKAGE_VERSION "0.1.0-alpha")
+set(CPACK_PACKAGE_VERSION "0.2.0-alpha")
 set(CPACK_PACKAGE_CONTACT "sammyj48")
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 include(CPack)
