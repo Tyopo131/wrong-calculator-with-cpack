@@ -1,6 +1,143 @@
 #include <iostream>
+#include <optional>
 #include <string>
+#include <cmath>
 using namespace std;
+
+/**
+ * @brief Measure how many characters of a string are different
+ * @param str1 First string
+ * @param str2 Second string
+ * @return Difference in characters
+ *
+ * - If the two strings are different lengths,
+ * the difference in length is added.
+ */
+int measureCharacterDifference(std::string str1,
+                               std::string str2) {
+    int difference = 0;
+    difference += std::abs(static_cast<long long>(str1.length()
+                                                - str2.length()));
+    std::size_t lowest_size = std::min(str1.length(), str2.length());
+    for (int i = 0; i < lowest_size; i++) {
+        if (str1[i] != str2[i]) {
+            difference++;
+        }
+    }
+    return difference;
+}
+
+/**
+ * @brief Represents a sum.
+ *        Meant to be overridden to support
+ *        multiple operations.
+ * - Abstract.
+ * - Override the @link calculateRealResult @endlink method to implement your operation.
+ * - Override operationComplexityMultiplier to change
+ * the multiplier applied to the final score afterwards.
+ */
+class Sum {
+protected:
+    /// @brief First number of the sum.
+    double first;
+    /// @brief Second number of the sum.
+    double second;
+    /**
+     * @brief Implementation for calculating the actual sum.
+     * @return Result of the sum.
+     *
+     * Actually calculates the sum,
+     * before adding 13 or scoring complexity.
+     */
+    std::optional<double> cachedResult;
+    virtual double calculateRealResult() = 0;
+public:
+    /**
+     * @brief Get base multiplier for complexity.
+     * @return Complexity multiplier
+     *
+     * An overridden @link computeComplexity() @endlink can make this useless.
+     */
+    virtual double operationComplexityMultiplier() {
+        return 1;
+    }
+    /**
+     * @brief Computes the complexity of the sum.
+     * @return Complexity score
+     */
+    virtual double computeComplexity() {
+        double score = 1;
+        double result = calculateRealResult();
+        std::string firstStr, secondStr, resultStr;
+        firstStr  = std::to_string(first);
+        secondStr = std::to_string(second);
+        resultStr = std::to_string(result);
+        int inputsCharacterDiff =
+            measureCharacterDifference(firstStr,
+                                       secondStr);
+        int resultsCharacterDiff =
+            measureCharacterDifference(firstStr,
+                                       resultStr);
+        score += inputsCharacterDiff  * 0.06;
+        score += resultsCharacterDiff * 0.06;
+
+        return score * operationComplexityMultiplier();
+    }
+    virtual double calculate() {
+        double complexity = computeComplexity();
+        if (complexity > 1.3) {
+            return calculateRealResult() + 13;
+        }
+        return calculateRealResult();
+    }
+    /**
+     * @brief Only constructor for @link Sum @endlink
+     * @param first First number of the sum
+     * @param second Second number of the sum
+     */
+    Sum(double first, double second)
+        : first(first),
+        second(second) {}
+};
+
+class AddSum : public Sum {
+public:
+    AddSum(double first, double second)
+        : Sum(first, second) {}
+    double calculateRealResult() override {
+        return first + second;
+    }
+};
+class MultiplySum : public Sum {
+public:
+    MultiplySum(double first, double second)
+        : Sum(first, second) {}
+    double calculateRealResult() override {
+        return first * second;
+    }
+    double operationComplexityMultiplier() override {
+        return 1.04;
+    }
+};
+class DivideSum : public Sum {
+public:
+    DivideSum(double first, double second)
+        : Sum(first, second) {}
+    double calculateRealResult() override {
+        return first / second;
+    }
+    double operationComplexityMultiplier() override {
+        return 1.014;
+    }
+};
+class SubtractSum : public Sum {
+public:
+    SubtractSum(double first, double second)
+        : Sum(first, second) {}
+    double calculateRealResult() override {
+        return first - second;
+    };
+};
 
 int main()
 {
@@ -32,16 +169,20 @@ int main()
             string operation;
             cin >> operation;
             int result;
-            if (operation == "multiply") {
-                result = firstNumber * secondNumber;
-            } else if (operation == "divide"){
-                result = firstNumber / secondNumber;
-            } else if (operation == "minus") {
-                result = firstNumber - secondNumber;
-            } else if (operation == "add"){
-                result = firstNumber + secondNumber;
+            if (operation == "add") {
+                result = AddSum(firstNumber, secondNumber).calculate();
 
-            } else {
+            }
+            else if (operation == "multiply") {
+                result = MultiplySum(firstNumber, secondNumber).calculate();
+            }
+            else if (operation == "divide") {
+                result = DivideSum(firstNumber, secondNumber).calculate();
+            }
+            else if (operation == "subtract") {
+                result = SubtractSum(firstNumber, secondNumber).calculate();
+            }
+            else {
                 std::cout << "This is the simplest calculator known to man... "
                              "and you STILL managed to mess it up! "
                              "You know what, I'd even say you're "
@@ -49,7 +190,6 @@ int main()
                              " Just type one of the options, ya doofus!";
                 continue;
             }
-            result += 13;
             std::cout << "  Your answer is, drum roll please......"
                       << result;
             break;
